@@ -14,13 +14,17 @@ var path = require('path');
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 
-module.exports = function (opts) {
-    if (opts === undefined) opts = {};
-    if (typeof opts === 'string') opts = { entries: [ opts ] };
-    if (Array.isArray(opts)) opts = { entries: opts };
+
+module.exports = function (files, opts) {
+    if (files === undefined) opts.entries = files = {};
+    if (typeof files === 'string') opts.entries = [ files ];
+    if (Array.isArray(files)) opts.entries = files;
     
     var b = new Browserify(opts);
-    [].concat(opts.entries).filter(Boolean).forEach(b.add.bind(b));
+    [].concat(opts.entries).filter(Boolean).forEach(function(file){
+      b.add.(file, opts);
+    });
+        
     return b;
 };
 
@@ -29,6 +33,7 @@ function hash(what) {
 }
 
 inherits(Browserify, EventEmitter);
+
 
 function Browserify (opts) {
     var self = this;
@@ -57,8 +62,10 @@ function Browserify (opts) {
     });
 }
 
-Browserify.prototype.add = function (file) {
-    this.require(file, { entry: true });
+Browserify.prototype.add = function (file, opts) {
+    opts = opts || {};
+    opts.entry = true;
+    this.require(file, opts);
     return this;
 };
 
@@ -69,7 +76,7 @@ Browserify.prototype.require = function (id, opts) {
     self._pending ++;
     
     var basedir = opts.basedir || process.cwd();
-    var fromfile = basedir + '/_fake.js';
+    var fromfile = path.join(basedir, '_fake.js');
     
     var params = { filename: fromfile, packageFilter: packageFilter };
     browserResolve(id, params, function (err, file) {
