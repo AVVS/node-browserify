@@ -37,8 +37,9 @@ inherits(Browserify, EventEmitter);
 function Browserify (opts) {
     var self = this;
     
-    self.files = [];
-    self.exports = {};
+        
+    self.files = [];    
+    self.exports = {};    
     self._pending = 0;
     self._entries = [];
     self._ignore = {};
@@ -47,6 +48,8 @@ function Browserify (opts) {
     self._mapped = {};
     self._transforms = [];
     self._noParse =[];
+    
+    if (opts.extensions) self._extensions = opts.extensions;    
      
     var noParse = [].concat(opts.noParse).filter(Boolean);
     var cwd = process.cwd();
@@ -78,6 +81,7 @@ Browserify.prototype.require = function (id, opts) {
     var fromfile = path.join(basedir, '_fake.js');
     
     var params = { filename: fromfile, packageFilter: packageFilter };
+    if (self._extensions) params.extensions = [].concat(self._extensions);
     browserResolve(id, params, function (err, file) {
         if (err) return self.emit('error', err);
         if (!file) return self.emit('error', new Error(
