@@ -355,6 +355,9 @@ Browserify.prototype._resolve = function (id, parent, cb) {
     };
     if (self._mapped[id]) return result(self._mapped[id]);
     
+    // extension options
+    if (self._extensions) parent.extensions = [].concat(self._extensions);
+    
     return browserResolve(id, parent, function(err, file) {
         if (err) return cb(err);
         if (!file) {
