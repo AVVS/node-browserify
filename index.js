@@ -22,7 +22,7 @@ module.exports = function (files, opts) {
     
     var b = new Browserify(opts);
     [].concat(opts.entries).filter(Boolean).forEach(function(file){
-      b.add.(file, opts);
+      b.add(file, opts);
     });
         
     return b;
@@ -33,7 +33,6 @@ function hash(what) {
 }
 
 inherits(Browserify, EventEmitter);
-
 
 function Browserify (opts) {
     var self = this;
